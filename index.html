@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkSeek - Land your Dream Job</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="#" class="logo">WorkSeek</a>
+            <div class="nav-buttons">
+                <div class="role-dropdown" data-active="seeker">
+                    <div class="role-dropdown-selected">
+                        <span class="role-text">Job Seeker</span>
+                        <span class="role-dropdown-arrow">▼</span>
+                    </div>
+                    <div class="role-dropdown-menu">
+                        <div class="role-dropdown-option selected" data-role="seeker">
+                            Job Seeker
+                        </div>
+                        <div class="role-dropdown-option" data-role="recruiter">
+                            Recruiter
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="hero-content">
+                <h1 id="heroTitle">Land Your Dream Job</h1>
+                <p id="heroSubtitle">Discover opportunities from top companies worldwide</p>
+            </div>
+        </section>
+
+        <div class="stats-dashboard" id="seekerStats">
+            <div class="stat-card">
+                <div class="stat-number" data-target="1250">300+</div>
+                <div class="stat-label">Active Jobs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="350">180+</div>
+                <div class="stat-label">Companies</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="5200">2,400</div>
+                <div class="stat-label">Job Seekers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="98">92%</div>
+                <div class="stat-label">Success Rate %</div>
+            </div>
+        </div>
+
+        <div class="stats-dashboard recruiter-stats" id="recruiterStats" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-number" id="myJobsCount">5</div>
+                <div class="stat-label">My Jobs Posted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalApplications">43</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgViews">8</div>
+                <div class="stat-label">Avg Views per Job</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="conversionRate">85%</div>
+                <div class="stat-label">Conversion Rate</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <main class="jobs-container">
+                <div class="jobs-header">
+                    <span class="jobs-count" id="jobsCount">Loading jobs...</span>
+                    <select class="sort-select" id="sortSelect">
+                        <option value="date">Sort by Date</option>
+                        <option value="title">Sort by Title</option>
+                        <option value="company">Sort by Company</option>
+                        <option value="salary">Sort by Salary</option>
+                    </select>
+                </div>
+
+                <div id="jobsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="sidebar">
+                <div class="active-filters" id="activeFilters" style="display: none;">
+                </div>
+
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search jobs..." id="searchInput">
+                    <span class="search-icon">🔍</span>
+                </div>
+
+                <button class="clear-filters" id="clearFilters">
+                    <span>🗑️ Clear All Filters</span>
+                </button>
+
+                <div class="filter-section">
+                    <h3>Job Type</h3>
+                    <div class="filter-group" id="jobTypeFilters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Full-time"> Full-time
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Part-time"> Part-time
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Contract"> Contract
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Remote"> Remote
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Experience Level</h3>
+                    <div class="filter-group" id="experienceFilters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Entry"> Entry Level
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Mid"> Mid Level
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Senior"> Senior Level
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Salary Range</h3>
+                    <div class="filter-group" id="salaryFilters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="0-50k"> Under $50K
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="50k-80k"> $50K - $80K
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="80k-120k"> $80K - $120K
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="120k+"> $120K+
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Company Size</h3>
+                    <div class="filter-group" id="companySizeFilters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Startup"> Startup (1-50)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Medium"> Medium (51-500)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Large"> Large (500+)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Industry</h3>
+                    <div class="filter-group" id="industryFilters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Technology"> Technology
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Finance"> Finance
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Healthcare"> Healthcare
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Education"> Education
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Marketing"> Marketing
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Date Posted</h3>
+                    <div class="filter-group" id="dateFilters">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="today"> Today
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="week"> Past Week
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="month"> Past Month
+                        </label>
+                    </div>
+                </div>
+
+                <div class="admin-panel" id="adminPanel" style="display: none;">
+                    <h3 id="formTitle">Add New Job</h3>
+                    <form id="jobForm">
+                        <div class="form-group">
+                            <label for="jobTitle">Job Title</label>
+                            <input type="text" id="jobTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName">Company</label>
+                            <input type="text" id="companyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobLocation">Location</label>
+                            <input type="text" id="jobLocation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobSalary">Salary Range</label>
+                            <input type="text" id="jobSalary" placeholder="$50,000 - $70,000">
+                        </div>
+                        <div class="form-group">
+                            <label for="jobType">Job Type</label>
+                            <select id="jobType" required>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Remote">Remote</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobStatus">Job Status</label>
+                            <select id="jobStatus" required>
+                                <option value="Draft">Draft</option>
+                                <option value="Active">Active</option>
+                                <option value="Paused">Paused</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Filled">Filled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="experienceLevel">Experience Level</label>
+                            <select id="experienceLevel" required>
+                                <option value="Entry">Entry Level</option>
+                                <option value="Mid">Mid Level</option>
+                                <option value="Senior">Senior Level</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobDescription">Description</label>
+                            <textarea id="jobDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobRequirements">Requirements (one per line)</label>
+                            <textarea id="jobRequirements" rows="3" placeholder="Bachelor's degree&#10;2+ years experience&#10;Strong communication skills"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobBenefits">Benefits (one per line)</label>
+                            <textarea id="jobBenefits" rows="3" placeholder="Health insurance&#10;Flexible hours&#10;Remote work options"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="companySize">Company Size</label>
+                            <select id="companySize" required>
+                                <option value="Startup">Startup (1-50)</option>
+                                <option value="Medium">Medium (51-500)</option>
+                                <option value="Large">Large (500+)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="industry">Industry</label>
+                            <select id="industry" required>
+                                <option value="Technology">Technology</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Marketing">Marketing</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="submitJobBtn">Add Job</button>
+                            <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="applicationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('applicationsModal').style.display = 'none'">&times;</span>
+            <div id="applicationsModalContent"></div>
+        </div>
+    </div>
+
+    <div id="candidateModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('candidateModal').style.display = 'none'">&times;</span>
+            <div id="candidateModalContent"></div>
+        </div>
+    </div>
+
+            <script src="script.js"></script>
+</body>
+</html>
