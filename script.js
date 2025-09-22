@@ -37,63 +37,58 @@ class JobPortal {
   async loadJobs() {
     console.log("Loading jobs from API...");
 
-    // List of APIs to try
-    const apis = [
-      "https://jsonplaceholder.org/posts", // Reliable public API
-      "https://jsonplaceholder.typicode.com/posts", // Backup API
-      "https://reqres.in/api/users", // Another backup
-    ];
+    // For CodeSandbox, try a quick API call with short timeout
+    try {
+      console.log("Trying quick API call for CodeSandbox...");
 
-    for (let i = 0; i < apis.length; i++) {
-      try {
-        console.log(`Trying API ${i + 1}: ${apis[i]}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500); // Very short timeout
 
-        // Add timeout to the fetch request
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-        const response = await fetch(apis[i], {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts",
+        {
           signal: controller.signal,
           method: "GET",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
           },
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
         }
+      );
 
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
         const data = await response.json();
-        console.log("API data received:", data.slice(0, 2)); // Log first 2 items
+        console.log(
+          "Quick API call successful, got data:",
+          data.length,
+          "items"
+        );
 
-        // Transform the data to job format regardless of source
-        this.jobs = this.transformApiDataToJobs(data.slice(0, 20)); // Limit to 20 items
-
+        // Transform the data to job format
+        this.jobs = this.transformApiDataToJobs(data.slice(0, 15)); // Limit to 15 items
         this.filteredJobs = [...this.jobs];
         this.initializeApplications();
         console.log("Jobs loaded successfully from API");
         return; // Success, exit the function
-      } catch (error) {
-        console.error(`API ${i + 1} failed:`, error);
-        if (i === apis.length - 1) {
-          // All APIs failed, use sample data
-          throw new Error("All APIs failed");
-        }
-        // Try next API
-        continue;
       }
+    } catch (error) {
+      console.log(
+        "Quick API failed, falling back to sample data:",
+        error.message
+      );
     }
+
+    // If API fails, immediately use sample data
+    console.log("Using sample data for reliable loading");
+    throw new Error("API failed, using sample data");
   }
 
   transformApiDataToJobs(data) {
     return data.map((item, index) => ({
       id: item.id || index + 1,
       title: this.generateJobTitle(
-        item.title || item.name || `Job ${index + 1}`
+        item.title || item.name || Job ${index + 1}
       ),
       company: this.generateCompanyName(item.userId || item.email || index),
       location: this.getRandomLocation(),
@@ -196,6 +191,7 @@ class JobPortal {
   }
 
   loadSampleJobs() {
+    console.log("Loading sample jobs data...");
     this.jobs = [
       {
         id: 1,
@@ -341,13 +337,14 @@ class JobPortal {
     ];
     this.filteredJobs = [...this.jobs];
     this.initializeApplications();
+    console.log("Sample jobs loaded successfully:", this.jobs.length, "jobs");
   }
 
   initializeApplications() {
     this.jobs.forEach((job) => {
       this.applications[job.id] = [];
       for (let i = 0; i < job.applicationCount; i++) {
-        const applicationId = `app_${job.id}_${i + 1}`;
+        const applicationId = app_${job.id}_${i + 1};
         const candidate = this.generateCandidate(applicationId);
         this.candidateProfiles[applicationId] = candidate;
 
@@ -396,11 +393,11 @@ class JobPortal {
       name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${
         lastNames[Math.floor(Math.random() * lastNames.length)]
       }`,
-      email: `${candidateId}@email.com`,
+      email: ${candidateId}@email.com,
       phone: `(555) ${Math.floor(Math.random() * 900) + 100}-${
         Math.floor(Math.random() * 9000) + 1000
       }`,
-      experience: `${Math.floor(Math.random() * 10) + 1} years`,
+      experience: ${Math.floor(Math.random() * 10) + 1} years,
       skills: this.getRandomSkills(),
       education: this.getRandomEducation(),
       resume: "View Resume",
@@ -775,7 +772,7 @@ class JobPortal {
       if (totalApplicationsEl)
         totalApplicationsEl.textContent = totalApplications;
       if (avgViewsEl) avgViewsEl.textContent = avgViews;
-      if (conversionRateEl) conversionRateEl.textContent = `${conversionRate}%`;
+      if (conversionRateEl) conversionRateEl.textContent = ${conversionRate}%;
     } catch (error) {
       console.error("Error updating recruiter stats:", error);
     }
@@ -960,7 +957,7 @@ class JobPortal {
                           this.currentUser === "recruiter"
                             ? `
                             <div class="job-metrics">
-                                <span class="job-metric">👁️ ${
+                                <span class="job-metric">👁 ${
                                   job.views
                                 } views</span>
                                 <span class="job-metric">📝 ${
@@ -987,7 +984,7 @@ class JobPortal {
                     ${
                       this.currentUser === "seeker"
                         ? `
-                        <button class="btn-apply" onclick="jobPortal.applyForJob(${
+                        <button class="btn-apply" onclick="window.jobPortal && window.jobPortal.applyForJob(${
                           job.id
                         })" ${
                             this.appliedJobs.includes(job.id) ? "disabled" : ""
@@ -1001,7 +998,7 @@ class JobPortal {
                     `
                         : ""
                     }
-                    <button class="btn-details" onclick="jobPortal.showJobDetails(${
+                    <button class="btn-details" onclick="window.jobPortal && window.jobPortal.showJobDetails(${
                       job.id
                     })">
                         <span>View Details</span>
@@ -1009,7 +1006,7 @@ class JobPortal {
                     ${
                       this.currentUser === "recruiter"
                         ? `
-                        <button class="btn btn-primary" onclick="jobPortal.viewApplications(${
+                        <button class="btn btn-primary" onclick="window.jobPortal && window.jobPortal.viewApplications(${
                           job.id
                         })">
                             View Applications (${job.applicationCount})
@@ -1017,8 +1014,8 @@ class JobPortal {
                         ${
                           job.isCustom
                             ? `
-                            <button class="btn btn-secondary" onclick="jobPortal.editJob(${job.id})">Edit</button>
-                            <button class="btn btn-secondary" onclick="jobPortal.deleteJob(${job.id})">Delete</button>
+                            <button class="btn btn-secondary" onclick="window.jobPortal && window.jobPortal.editJob(${job.id})">Edit</button>
+                            <button class="btn btn-secondary" onclick="window.jobPortal && window.jobPortal.deleteJob(${job.id})">Delete</button>
                         `
                             : ""
                         }
@@ -1034,7 +1031,7 @@ class JobPortal {
       // Add staggered animation to job cards
       document.querySelectorAll(".job-card").forEach((card, index) => {
         setTimeout(() => {
-          card.style.animationDelay = `${index * 100}ms`;
+          card.style.animationDelay = ${index * 100}ms;
         }, index * 100);
       });
     } catch (error) {
@@ -1065,7 +1062,7 @@ class JobPortal {
       }
 
       if (this.currentUser === "recruiter" && totalCount > 5) {
-        jobsCount.textContent = `Showing ${displayCount} of ${totalCount} jobs`;
+        jobsCount.textContent = Showing ${displayCount} of ${totalCount} jobs;
       } else {
         jobsCount.textContent = `${displayCount} job${
           displayCount !== 1 ? "s" : ""
@@ -1104,16 +1101,16 @@ class JobPortal {
             
             <h4>Requirements</h4>
             <ul>
-                ${job.requirements.map((req) => `<li>${req}</li>`).join("")}
+                ${job.requirements.map((req) => <li>${req}</li>).join("")}
             </ul>
             
             <h4>Benefits</h4>
             <ul>
-                ${job.benefits.map((benefit) => `<li>${benefit}</li>`).join("")}
+                ${job.benefits.map((benefit) => <li>${benefit}</li>).join("")}
             </ul>
             
             <div class="modal-actions" style="margin-top: 2rem;">
-                <button class="btn-apply" onclick="jobPortal.applyForJob(${
+                <button class="btn-apply" onclick="window.jobPortal && window.jobPortal.applyForJob(${
                   job.id
                 }); document.getElementById('jobModal').style.display = 'none';" ${
       this.appliedJobs.includes(job.id) ? "disabled" : ""
@@ -1143,7 +1140,7 @@ class JobPortal {
         <p><strong>Total Applications:</strong> ${applications.length}</p>
         
         <div class="application-filters">
-            <select id="statusFilter" onchange="jobPortal.filterApplications(${jobId})">
+            <select id="statusFilter" onchange="window.jobPortal && window.jobPortal.filterApplications(${jobId})">
                 <option value="">All Status</option>
                 <option value="New">New</option>
                 <option value="Reviewed">Reviewed</option>
@@ -1183,7 +1180,7 @@ class JobPortal {
         }</p>
                     </div>
                     <div class="application-status">
-                        <select class="status-select" onchange="jobPortal.updateApplicationStatus('${
+                        <select class="status-select" onchange="window.jobPortal && window.jobPortal.updateApplicationStatus('${
                           app.id
                         }', this.value)">
                             <option value="New" ${
@@ -1217,12 +1214,12 @@ class JobPortal {
                     ).toLocaleDateString()}</p>
                 </div>
                 <div class="application-actions">
-                    <button class="btn btn-primary" onclick="jobPortal.viewCandidateProfile('${
+                    <button class="btn btn-primary" onclick="window.jobPortal && window.jobPortal.viewCandidateProfile('${
                       app.candidateId
                     }')">
                         View Profile
                     </button>
-                    <button class="btn btn-secondary" onclick="jobPortal.addCandidateNote('${
+                    <button class="btn btn-secondary" onclick="window.jobPortal && window.jobPortal.addCandidateNote('${
                       app.id
                     }')">
                         Add Note
@@ -1251,7 +1248,7 @@ class JobPortal {
       const app = this.applications[jobId].find((a) => a.id === applicationId);
       if (app) {
         app.status = newStatus;
-        this.showToast(`Application status updated to ${newStatus}`);
+        this.showToast(Application status updated to ${newStatus});
         break;
       }
     }
@@ -1283,7 +1280,7 @@ class JobPortal {
                 <h3>Skills</h3>
                 <div class="skills-tags">
                     ${candidate.skills
-                      .map((skill) => `<span class="skill-tag">${skill}</span>`)
+                      .map((skill) => <span class="skill-tag">${skill}</span>)
                       .join("")}
                 </div>
             </div>
@@ -1433,38 +1430,86 @@ class JobPortal {
 let jobPortal;
 console.log("Script loaded, document.readyState:", document.readyState);
 
-// Multiple initialization strategies for different environments
-function initializePortal() {
-  console.log("initializePortal called");
-  if (document.readyState === "loading") {
-    console.log("DOM still loading, adding event listener");
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("DOMContentLoaded fired, creating JobPortal");
-      jobPortal = new JobPortal();
-    });
-  } else {
-    // DOM is already loaded
-    console.log("DOM already loaded, creating JobPortal immediately");
+// Simple and reliable initialization for CodeSandbox
+function initJobPortal() {
+  console.log("Initializing JobPortal...");
+  try {
     jobPortal = new JobPortal();
+    // Ensure jobPortal is globally accessible for onclick handlers
+    window.jobPortal = jobPortal;
+    console.log("JobPortal successfully attached to window object");
+  } catch (error) {
+    console.error("Failed to initialize JobPortal:", error);
+    // Retry after a short delay
+    setTimeout(() => {
+      console.log("Retrying JobPortal initialization...");
+      try {
+        jobPortal = new JobPortal();
+        window.jobPortal = jobPortal;
+        console.log("JobPortal successfully attached to window object on retry");
+      } catch (retryError) {
+        console.error("Second attempt failed:", retryError);
+      }
+    }, 500);
   }
 }
 
-// For CodeSandbox compatibility
-if (typeof window !== "undefined") {
-  console.log("Window is available");
-  if (document.readyState === "loading") {
-    console.log("Document loading, adding DOMContentLoaded listener");
-    document.addEventListener("DOMContentLoaded", initializePortal);
-  } else {
-    // DOM is already loaded (common in CodeSandbox)
-    console.log("Document ready, initializing with timeout");
-    setTimeout(() => {
-      console.log("Timeout fired, creating JobPortal");
-      jobPortal = new JobPortal();
-    }, 100);
-  }
+// Multiple initialization strategies for maximum compatibility
+if (document.readyState === "loading") {
+  console.log("Document still loading, waiting for DOMContentLoaded");
+  document.addEventListener("DOMContentLoaded", initJobPortal);
+} else if (
+  document.readyState === "interactive" ||
+  document.readyState === "complete"
+) {
+  console.log("Document already loaded, initializing immediately");
+  // Small delay to ensure all elements are ready
+  setTimeout(initJobPortal, 50);
 } else {
-  // Fallback
-  console.log("No window, using fallback");
-  initializePortal();
+  console.log("Fallback initialization");
+  // Fallback with longer delay
+  setTimeout(initJobPortal, 200);
 }
+
+// Additional safety net for CodeSandbox
+window.addEventListener("load", () => {
+  console.log("Window load event fired");
+  if (!jobPortal) {
+    console.log("JobPortal not initialized yet, trying again");
+    initJobPortal();
+  } else if (!window.jobPortal) {
+    console.log("JobPortal not attached to window, attaching now");
+    window.jobPortal = jobPortal;
+  }
+});
+
+// Debug function for CodeSandbox
+window.debugJobPortal = function () {
+  console.log("=== DEBUG INFO ===");
+  console.log("JobPortal instance:", jobPortal);
+  console.log("Window JobPortal:", window.jobPortal);
+  console.log("Document ready state:", document.readyState);
+  console.log("Jobs array:", jobPortal ? jobPortal.jobs : "No jobPortal");
+  console.log(
+    "Filtered jobs:",
+    jobPortal ? jobPortal.filteredJobs : "No jobPortal"
+  );
+
+  if (!jobPortal) {
+    console.log("Creating JobPortal instance manually...");
+    initJobPortal();
+  } else if (!window.jobPortal) {
+    console.log("Attaching jobPortal to window...");
+    window.jobPortal = jobPortal;
+  } else if (jobPortal.jobs.length === 0) {
+    console.log("No jobs loaded, trying to load sample data...");
+    jobPortal.loadSampleJobs();
+    jobPortal.renderJobs();
+    jobPortal.updateJobsCount();
+  } else {
+    console.log("Jobs are loaded, re-rendering...");
+    jobPortal.renderJobs();
+  }
+
+  console.log("=== END DEBUG ===");
+};
